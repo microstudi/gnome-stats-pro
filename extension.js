@@ -27,7 +27,11 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 
-const INDICATOR_UPDATE_INTERVAL = 250;
+const GRAPH_UPDATE_INTERVAL = 250; // 250 originally
+const INDICATOR_UPDATE_INTERVAL = 1000; // 250 originally
+const CPU_UPDATE_INTERVAL = 1000; // 250 originally
+const MEMORY_UPDATE_INTERVAL = 2000; // 1000 originally
+const SWAP_UPDATE_INTERVAL = 4000; // 2000 originally
 const INDICATOR_NUM_GRID_LINES = 3;
 
 const ITEM_LABEL_SHOW_TIME = 0.15;
@@ -93,7 +97,7 @@ function HorizontalGraph(options) {
     this.stats = {};
     this.max = -1;
     this.options = {
-        updateInterval: INDICATOR_UPDATE_INTERVAL,
+        updateInterval: GRAPH_UPDATE_INTERVAL,
         offsetX: 2,
         offsetY: -1,
         units: '',
@@ -657,7 +661,7 @@ const CpuIndicator = new Lang.Class({
 
     _init: function() {
         this.parent({
-            updateInterval: 250,
+            updateInterval: CPU_UPDATE_INTERVAL,
             decay: 0.2
         });
 
@@ -774,7 +778,7 @@ const MemoryIndicator = new Lang.Class({
 
     _init: function() {
         this.parent({
-            updateInterval: 1000
+            updateInterval: MEMORY_UPDATE_INTERVAL
         });
 
         this.current_label = new St.Label({style_class:'title_label'});
@@ -922,7 +926,7 @@ const SwapIndicator = new Lang.Class({
 
     _init: function() {
         this.parent({
-            updateInterval: 2000
+            updateInterval: SWAP_UPDATE_INTERVAL
         });
 
         this.current_label = new St.Label({style_class:'title_label'});
