@@ -203,6 +203,8 @@ HorizontalGraph.prototype = {
     },
 
     _updateStyles: function() {
+        if (false === this.actor.is_mapped()) return;
+
         // get and cache the grid color
         let themeNode = this.actor.get_theme_node();
         let [hasGridColor, gridColor] =
@@ -402,11 +404,6 @@ const Indicator = new Lang.Class({
         this.actor.connect('notify::visible', Lang.bind(this, this._onVisibilityChanged));
         this.actor.connect('style-changed', Lang.bind(this, this._updateStyles));
 
-        let [width, height] = this.drawing_area.get_size();
-
-        this.drawing_area.set_width(width * scale_factor);
-        this.drawing_area.set_height(height * scale_factor);
-
         this.resized = false;
 
         this.dropdown = new St.Widget({
@@ -554,6 +551,13 @@ const Indicator = new Lang.Class({
     },
 
     _updateStyles: function() {
+        if (false === this.actor.is_mapped()) return;
+
+        let [width, height] = this.drawing_area.get_size();
+
+        this.drawing_area.set_width(width * this.scale_factor);
+        this.drawing_area.set_height(height * this.scale_factor);
+
         // get and cache the grid color
         let themeNode = this.actor.get_theme_node();
         let [hasGridColor, gridColor] =
@@ -1115,6 +1119,9 @@ const NetworkIndicator = new Lang.Class({
                 if (iface_list[j].state === NetworkManager.DeviceState.ACTIVATED) {
                     this._ifs.push(iface_list[j].get_ip_iface() || iface_list[j].get_iface());
                     this._ifs_speed.push((iface_list[j].get_speed !== undefined ? iface_list[j].get_speed() : -1));
+                } else {
+                    this._ifs.push(null);
+                    this._ifs_speed.push(null);
                 }
             }
         } catch (e) {
@@ -1124,10 +1131,10 @@ const NetworkIndicator = new Lang.Class({
 
     _updateValues: function() {
         let accum = [0, 0, 0, 0, 0, 0];
-        for (let j = 0; j < this._ifs.length; j++) {
-            let device = this._getDevice(this._ifs[j]);
+        for (let j = 0; j < this._iface_list.length; j++) {
+            let device = this._iface_list[j];
 
-            if (device !== null && device.state === NetworkManager.DeviceState.ACTIVATED) {
+            if (device.state === NetworkManager.DeviceState.ACTIVATED) {
                 GTop.glibtop_get_netload(this._gtop, this._ifs[j]);
                 accum[0] += this._gtop.bytes_in;
                 accum[1] += this._gtop.errors_in;
